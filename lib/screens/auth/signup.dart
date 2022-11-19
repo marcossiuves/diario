@@ -1,6 +1,5 @@
+import 'package:diario/services/auth.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-
 
 class SignUp extends StatefulWidget {
   SignUp({Key? key}) : super(key: key);
@@ -10,25 +9,7 @@ class SignUp extends StatefulWidget {
 }
 
 class _SignUpState extends State<SignUp> {
-  FirebaseAuth auth = FirebaseAuth.instance;
-
-  void signUpAction() async {
-    try {
-      final credential =
-        await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-    } on FirebaseAuthException catch (e) {
-      if (e.code == 'weak-password') {
-        print('The password provided is too weak.');
-      } else if (e.code == 'email-already-in-use') {
-        print('The account already exists for that email.');
-      }
-    } catch (e) {
-      print(e);
-    }
-  }
+  final AuthService _authService = AuthService();
 
   String email = "";
   String password = "";
@@ -56,10 +37,18 @@ class _SignUpState extends State<SignUp> {
                 password = val;
               }),
             ),
+            const SizedBox(height: 10),
             ElevatedButton(
-                child: const Text("Registrar"), onPressed: () async => {
-                  signUpAction(),
-                }),
+                child: const Text("Registrar"),
+                onPressed: () async => {
+                      _authService.signUp(email, password),
+                    }),
+            const SizedBox(height: 10),
+            ElevatedButton(
+                child: const Text("Entrar"),
+                onPressed: () async => {
+                      _authService.signIn(email, password),
+                    }),
           ],
         )),
       ),
